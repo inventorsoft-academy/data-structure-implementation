@@ -48,6 +48,7 @@ class Deque <Item extends Comparable<? super Item>> {
 
     public void pushBack(Item data) {
         if (isEmpty()) {
+            clear();
             lastPos++;
             values[lastPos] = data;
             firstPos = lastPos;
@@ -100,6 +101,42 @@ class Deque <Item extends Comparable<? super Item>> {
         }
     }
 
+    public void removeIf(int count, int start, int amount) {
+        if (itemCount == count) {
+            remove(start, start + amount - 1);
+        }
+    }
+
+    public Deque<Item> distinct() {
+        ArrayList<Item> oldValues = asList();
+        ArrayList<Item> newValues = new ArrayList<Item>();
+        if(isEmpty() || itemCount == 1) {
+            return this;
+        } else {
+            for(int i = 0; i < oldValues.size()-1; i++) {
+                boolean isUnique = true;
+                for(int j = 0; j < newValues.size(); j++) {
+                    if (oldValues.get(i).equals(oldValues.get(j))){
+                        isUnique = false;
+                        break;
+                    }
+                }
+                if(isUnique)
+                    newValues.add(oldValues.get(i));
+            }
+        }
+        for (int i = firstPos; i <= lastPos; i++ )
+            values[i] = null;
+        for (int i = 0, j = firstPos; i < newValues.size(); i++) {
+            values[j++] = newValues.get(i);
+        }
+
+        size = newValues.size();
+        lastPos = firstPos + newValues.size();
+
+        return this;
+    }
+
     public void remove(int begin, int end) {
         ArrayList<Item> arr = asList();     //We can use vanilla arrays as well, but then we should write our own Array.addAll() method.
         if (end >= lastPos - firstPos)
@@ -107,7 +144,7 @@ class Deque <Item extends Comparable<? super Item>> {
         else if (begin < 0)
             throw new IndexOutOfBoundsException("Begin index is too small");
         else  {
-            for(int i = 0; i < values.length; i++) {
+            for(int i = firstPos; i <= lastPos; i++) {
                 values[i] = null;
             }
             //newArr = arr[firstPos; begin) + arr(end; lastPos]
@@ -196,6 +233,23 @@ class Deque <Item extends Comparable<? super Item>> {
         deq.sort();
         System.out.println(deq.asList());
 
+        System.out.println(deq.itemCount);
+        deq.removeIf(6, 0,3);
+        System.out.println(deq.asList());
+
+        deq.clear();
+
+        deq.pushBack(3);
+        deq.pushBack(3);
+        deq.pushBack(2);
+        deq.pushBack(4);
+        deq.pushBack(5);
+        deq.pushBack(5);
+        System.out.println(deq);
+        deq.distinct();
+        System.out.println(deq);
+        deq.sort();
+        System.out.println(deq.asList());
     }
 
 }
